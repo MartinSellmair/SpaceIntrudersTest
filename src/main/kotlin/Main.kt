@@ -1,8 +1,11 @@
 import androidx.compose.desktop.ui.tooling.preview.Preview
+import androidx.compose.foundation.layout.offset
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import test.Model
@@ -18,19 +21,27 @@ fun App(model: Model) {
         }
     )
 
+
+
     MaterialTheme(
         content = {
             ->
+            var testX: Int by remember { mutableStateOf(0) }
             Button(
                 //das ist ein lambda
                 onClick = {
                     ->
                     model.Increment()
-                    testText = "Hello, Desktop!" + model.test
+                    testText = "Hello, Desktop!" + model.Counter
+                    testX = model.Counter * 10
 
                 },
-                //wir setzten text auf einen speicherbereich names testText, wenn sich testText ändert, ändert sich auch der dargestellte text automatisch
-                content = { -> Text(text = testText) }
+                content = {
+                    //wir setzten text auf einen speicherbereich names testText, wenn sich testText ändert, ändert sich auch der dargestellte text automatisch
+                    ->
+                    Text(text = testText)
+                },
+                modifier = Modifier.offset(x = testX.dp, y = 100.dp)
             )
         }
     )
