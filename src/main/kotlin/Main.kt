@@ -1,48 +1,42 @@
 import androidx.compose.desktop.ui.tooling.preview.Preview
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.offset
-import androidx.compose.material.Button
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.input.key.*
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
+import kotlinx.coroutines.isActive
 import test.Model
 
 @Composable
 @Preview
 fun App(model: Model) {
-    var testText: String by remember<MutableState<String>>(
-        calculation = {
-            ->
-            val mutableStateOf: MutableState<String> = mutableStateOf<String>(value = "Hello, World!")
-            return@remember mutableStateOf
-        }
-    )
-
-
-
     MaterialTheme(
         content = {
             ->
             var testX: Int by remember { mutableStateOf(0) }
-            Button(
-                //das ist ein lambda
-                onClick = {
-                    ->
-                    model.Increment()
-                    testText = "Hello, Desktop!" + model.Counter
-                    testX = model.Counter * 10
 
-                },
+            Box(
                 content = {
-                    //wir setzten text auf einen speicherbereich names testText, wenn sich testText ändert, ändert sich auch der dargestellte text automatisch
                     ->
-                    Text(text = testText)
+                    LaunchedEffect(true) {
+                        while (isActive) {
+                            withFrameMillis(onFrame = { it: Long -> it })
+                            testX = model.Counter
+                        }
+                    }
                 },
-                modifier = Modifier.offset(x = testX.dp, y = 100.dp)
+                modifier = Modifier.offset(x = testX.dp, y = 10.dp).size(50.dp).clip(RectangleShape).background(Color.Red),
             )
+
         }
     )
 }
@@ -57,7 +51,16 @@ fun main() {
             ->
             Window(
                 onCloseRequest = ::exitApplication,
-                content = { -> App(model) }
+                content = { -> App(model) },
+                onKeyEvent = { keyEvent ->
+                    if (keyEvent.key == Key.A) {
+                        model.ProcessKeyPressed(Key.A)
+                    } else if (keyEvent.key == Key.B) {
+                        model.ProcessKeyPressed(Key.B)
+                    }
+
+                    return@Window false
+                }
             )
         })
 }
